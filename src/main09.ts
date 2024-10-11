@@ -2,8 +2,7 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import Stats from "three/addons/libs/stats.module.js";
-// import { GUI } from "dat.gui";
-import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+import { GUI } from "dat.gui";
 
 const scene = new THREE.Scene();
 // scene.environment = new THREE.CubeTextureLoader().setPath('https://sbcode.net/img/').load(['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'])
@@ -82,7 +81,7 @@ meshBasicMaterialFolder.addColor(data, "color").onChange(() => {
   (meshes[0].material as THREE.MeshBasicMaterial).color.set(data.color);
 });
 meshBasicMaterialFolder.add(meshes[0].material, "wireframe");
-// meshBasicMaterialFolder.open();
+meshBasicMaterialFolder.open();
 
 const meshNormalMaterialFolder = gui.addFolder("MeshNormalMaterial");
 meshNormalMaterialFolder
@@ -91,7 +90,7 @@ meshNormalMaterialFolder
     meshes[1].material.needsUpdate = true;
   });
 meshNormalMaterialFolder.add(meshes[1].material, "wireframe");
-// meshNormalMaterialFolder.open();
+meshNormalMaterialFolder.open();
 
 const meshPhongMaterialFolder = gui.addFolder("MeshPhongMaterial");
 meshPhongMaterialFolder.addColor(data, "color").onChange(() => {
@@ -103,7 +102,7 @@ meshPhongMaterialFolder
     meshes[2].material.needsUpdate = true;
   });
 meshPhongMaterialFolder.add(meshes[2].material, "wireframe");
-// meshPhongMaterialFolder.open();
+meshPhongMaterialFolder.open();
 
 const meshStandardMaterialFolder = gui.addFolder("MeshStandardMaterial");
 meshStandardMaterialFolder.addColor(data, "color").onChange(() => {
@@ -115,19 +114,19 @@ meshStandardMaterialFolder
     meshes[3].material.needsUpdate = true;
   });
 meshStandardMaterialFolder.add(meshes[3].material, "wireframe");
-// meshStandardMaterialFolder.open();
+meshStandardMaterialFolder.open();
 
 const lightFolder = gui.addFolder("Light");
 lightFolder.add(light, "visible");
-// lightFolder.open();
+lightFolder.open();
 
 const gridFolder = gui.addFolder("Grid");
 gridFolder.add(gridHelper, "visible");
-// gridFolder.open();
+gridFolder.open();
 
 const labelsFolder = gui.addFolder("Labels");
 labelsFolder.add(data, "labelsVisible");
-// labelsFolder.open();
+labelsFolder.open();
 
 const labels = document.querySelectorAll<HTMLDivElement>(".label");
 
