@@ -22,12 +22,13 @@ const hdr = "https://sbcode.net/img/spruit_sunrise_1k.hdr";
 
 let environmentTexture: THREE.DataTexture;
 
+// HDR 형식의 이미지를 로드하는 로더
 new RGBELoader().load(hdr, (texture) => {
-  environmentTexture = texture;
-  environmentTexture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = environmentTexture;
-  scene.background = environmentTexture;
-  scene.environmentIntensity = 1; // added in Three r163
+  environmentTexture = texture; // 재사용 가능하게 만든다.
+  environmentTexture.mapping = THREE.EquirectangularReflectionMapping; // HDR 텍스처가 장면의 전체적인 반사와 조명 효과로 사용되도록 설정
+  scene.environment = environmentTexture; // 내 모든 물체가 이 환경 맵을 반사할 수 있게 됨
+  scene.background = environmentTexture; // 장면의 배경을 이 HDR 이미지로 지정
+  scene.environmentIntensity = 1; // HDR 환경 맵에서 빛의 강도를 조정
 });
 
 const directionallight = new THREE.DirectionalLight(0xebfeff, Math.PI);
