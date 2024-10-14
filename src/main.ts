@@ -16,9 +16,20 @@ const scene = new THREE.Scene();
 
 // 환경 맵 기반으로 색상이 결정된다.
 // 조명을 여러 개 배치하는 것보다 간편하다.
-// const hdr = "https://sbcode.net/img/rustig_koppie_puresky_1k.hdr";
+const hdr = "https://sbcode.net/img/rustig_koppie_puresky_1k.hdr";
 // const hdr = "https://sbcode.net/img/venice_sunset_1k.hdr";
-const hdr = "https://sbcode.net/img/spruit_sunrise_1k.hdr";
+// const hdr = "https://sbcode.net/img/spruit_sunrise_1k.hdr";
+
+const textureLoader = new THREE.TextureLoader();
+const diffuseMap = textureLoader.load(
+  "/images/textures/vintage_wooden_drawer_01_diff_4k.jpg"
+); // 디퓨즈 맵
+const normalMap = textureLoader.load(
+  "/images/textures/vintage_wooden_drawer_01_nor_gl_4k.jpg"
+); // 노멀 맵
+const armMap = textureLoader.load(
+  "/images/textures/vintage_wooden_drawer_01_arm_4k.jpg"
+);
 
 let environmentTexture: THREE.DataTexture;
 
@@ -44,7 +55,7 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  100
+  1000
 );
 camera.position.set(-2, 0.5, 2);
 
@@ -85,15 +96,9 @@ plane.position.y = -1;
 plane.visible = false;
 scene.add(plane);
 
-new GLTFLoader().load(
-  "https://sbcode.net/models/suzanne_no_material.glb",
-  (gltf) => {
-    gltf.scene.traverse((child) => {
-      (child as THREE.Mesh).material = material;
-    });
-    scene.add(gltf.scene);
-  }
-);
+new GLTFLoader().load("/images/vintage_wooden_drawer_01.gltf", (gltf) => {
+  scene.add(gltf.scene);
+});
 
 const data = {
   environment: true,
