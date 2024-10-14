@@ -4,63 +4,25 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import Stats from "three/addons/libs/stats.module.js";
-import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
 const scene = new THREE.Scene();
 
-// const environmentTexture = new THREE.CubeTextureLoader()
-//   .setPath("https://sbcode.net/img/")
-//   .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
-// scene.environment = environmentTexture;
-// scene.background = environmentTexture;
-
-// 환경 맵 기반으로 색상이 결정된다.
-// 조명을 여러 개 배치하는 것보다 간편하다.
-const hdr = "https://sbcode.net/img/rustig_koppie_puresky_1k.hdr";
-// const hdr = "https://sbcode.net/img/venice_sunset_1k.hdr";
-// const hdr = "https://sbcode.net/img/spruit_sunrise_1k.hdr";
-
-const textureLoader = new THREE.TextureLoader();
-const diffuseMap = textureLoader.load(
-  "/images/textures/vintage_wooden_drawer_01_diff_4k.jpg"
-); // 디퓨즈 맵
-const normalMap = textureLoader.load(
-  "/images/textures/vintage_wooden_drawer_01_nor_gl_4k.jpg"
-); // 노멀 맵
-const armMap = textureLoader.load(
-  "/images/textures/vintage_wooden_drawer_01_arm_4k.jpg"
-);
-
-let environmentTexture: THREE.DataTexture;
-
-// HDR 형식의 이미지를 로드하는 로더
-new RGBELoader().load(hdr, (texture) => {
-  environmentTexture = texture; // 재사용 가능하게 만든다.
-  environmentTexture.mapping = THREE.EquirectangularReflectionMapping; // HDR 텍스처가 장면의 전체적인 반사와 조명 효과로 사용되도록 설정
-  scene.environment = environmentTexture; // 내 모든 물체가 이 환경 맵을 반사할 수 있게 됨
-  scene.background = environmentTexture; // 장면의 배경을 이 HDR 이미지로 지정
-  scene.environmentIntensity = 1; // HDR 환경 맵에서 빛의 강도를 조정
+new RGBELoader().load("images/illovo_beach_balcony_4k.hdr", (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = texture;
+  scene.background = texture;
+  scene.backgroundBlurriness = 1.0;
 });
-
-const directionallight = new THREE.DirectionalLight(0xebfeff, Math.PI);
-directionallight.position.set(1, 0.1, 1);
-directionallight.visible = false;
-scene.add(directionallight);
-
-const ambientLight = new THREE.AmbientLight(0xebfeff, Math.PI / 16);
-ambientLight.visible = false;
-scene.add(ambientLight);
 
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  1000
+  100
 );
-camera.position.set(-2, 0.5, 2);
+camera.position.set(2, 1, -2);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-// 이 코드 없으면 너무 밝음. 왜?
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -72,97 +34,61 @@ window.addEventListener("resize", () => {
 });
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.y = 0.75;
 controls.enableDamping = true;
 
-const texture = new THREE.TextureLoader().load(
-  "https://sbcode.net/img/grid.png"
-);
-texture.colorSpace = THREE.SRGBColorSpace;
+// const loader = new GLTFLoader();
+// let suvBody: THREE.Object3D;
+// // 해당 모델이 중복되므로 캐시된다.
+// // 실제로 내 서버에서 해당 모델을 4번 다운로드 하지 않는다.
+// // 모델 로더는 비동기 작업이다.
+// loader.load("models/suv_body.glb", (gltf) => {
+//   suvBody = gltf.scene;
 
-const material = new THREE.MeshPhysicalMaterial();
-material.side = THREE.DoubleSide;
-// material.envMapIntensity = 0.7
-// material.roughness = 0.17
-// material.metalness = 0.07
-// material.clearcoat = 0.43
-// material.iridescence = 1
-// material.transmission = 1
-// material.thickness = 5.12
-// material.ior = 1.78
-
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), material);
-plane.rotation.x = -Math.PI / 2;
-plane.position.y = -1;
-plane.visible = false;
-scene.add(plane);
-
-new GLTFLoader().load("/images/vintage_wooden_drawer_01.gltf", (gltf) => {
-  scene.add(gltf.scene);
+//   // suvBody 코드 안으로 넣어주었기 때문에 suvBody 로드가 끝나면 바퀴가 로드된다.
+//   loader.load("models/suv_wheel.glb", (gltf) => {
+//     gltf.scene.position.set(-0.65, 0.2, -0.77);
+//     // suvBody으로 add 해준다.
+//     // 이렇게 하면 suvBody가 움직일 때 같이 움직임
+//     suvBody.add(gltf.scene);
+//   });
+//   loader.load("models/suv_wheel.glb", (gltf) => {
+//     gltf.scene.position.set(0.65, 0.2, -0.77);
+//     gltf.scene.rotateY(Math.PI);
+//     suvBody.add(gltf.scene);
+//   });
+//   loader.load("models/suv_wheel.glb", (gltf) => {
+//     gltf.scene.position.set(-0.65, 0.2, 0.57);
+//     suvBody.add(gltf.scene);
+//   });
+//   loader.load("models/suv_wheel.glb", (gltf) => {
+//     gltf.scene.position.set(0.65, 0.2, 0.57);
+//     gltf.scene.rotateY(Math.PI);
+//     suvBody.add(gltf.scene);
+//   });
+//   scene.add(gltf.scene);
+// });
+const loader = new GLTFLoader();
+let suvBody: THREE.Object3D;
+await loader.loadAsync("models/suv_body.glb").then((gltf) => {
+  suvBody = gltf.scene;
 });
-
-const data = {
-  environment: true,
-  background: true,
-  mapEnabled: false,
-  planeVisible: false,
-};
-
-const gui = new GUI();
-
-gui.add(data, "environment").onChange(() => {
-  if (data.environment) {
-    scene.environment = environmentTexture;
-    directionallight.visible = false;
-    ambientLight.visible = false;
-  } else {
-    scene.environment = null;
-    directionallight.visible = true;
-    ambientLight.visible = true;
-  }
+loader.load("models/suv_wheel.glb", function (gltf) {
+  const wheels = [
+    gltf.scene,
+    gltf.scene.clone(),
+    gltf.scene.clone(),
+    gltf.scene.clone(),
+  ];
+  wheels[0].position.set(-0.65, 0.2, -0.77);
+  wheels[1].position.set(0.65, 0.2, -0.77);
+  wheels[1].rotateY(Math.PI);
+  wheels[2].position.set(-0.65, 0.2, 0.57);
+  wheels[3].position.set(0.65, 0.2, 0.57);
+  wheels[3].rotateY(Math.PI);
+  suvBody.add(...wheels);
+  scene.add(suvBody);
 });
-
-gui.add(scene, "environmentIntensity", 0, 2, 0.01); // new in Three r163. Can be used instead of `renderer.toneMapping` with `renderer.toneMappingExposure`
-
-gui.add(renderer, "toneMappingExposure", 0, 2, 0.01);
-
-gui.add(data, "background").onChange(() => {
-  if (data.background) {
-    scene.background = environmentTexture;
-  } else {
-    scene.background = null;
-  }
-});
-
-gui.add(scene, "backgroundBlurriness", 0, 1, 0.01);
-
-gui.add(data, "mapEnabled").onChange(() => {
-  if (data.mapEnabled) {
-    material.map = texture;
-  } else {
-    material.map = null;
-  }
-  material.needsUpdate = true;
-});
-
-gui.add(data, "planeVisible").onChange((v) => {
-  plane.visible = v;
-});
-
-const materialFolder = gui.addFolder("meshPhysicalMaterial");
-materialFolder.add(material, "envMapIntensity", 0, 1.0, 0.01).onChange(() => {
-  // Since r163, `envMap` is no longer copied from `scene.environment`. You will need to manually copy it, if you want to modify `envMapIntensity`
-  if (!material.envMap) {
-    material.envMap = scene.environment;
-  }
-}); // from meshStandardMaterial
-materialFolder.add(material, "roughness", 0, 1.0, 0.01); // from meshStandardMaterial
-materialFolder.add(material, "metalness", 0, 1.0, 0.01); // from meshStandardMaterial
-materialFolder.add(material, "clearcoat", 0, 1.0, 0.01);
-materialFolder.add(material, "iridescence", 0, 1.0, 0.01);
-materialFolder.add(material, "transmission", 0, 1.0, 0.01);
-materialFolder.add(material, "thickness", 0, 10.0, 0.01);
-materialFolder.add(material, "ior", 1.0, 2.333, 0.01);
-materialFolder.close();
 
 const stats = new Stats();
 document.body.appendChild(stats.dom);
