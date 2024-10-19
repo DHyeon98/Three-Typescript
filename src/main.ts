@@ -62,7 +62,6 @@ renderer.domElement.addEventListener("mousemove", (e) => {
 
   // 교차한 객체가 있을 경우
   if (intersects.length) {
-    console.log(intersects);
     // console.log(intersects[0].point);
     // console.log(intersects[0].object.name + " " + intersects[0].distance);
     // console.log((intersects[0].face as THREE.Face).normal);
@@ -89,6 +88,7 @@ renderer.domElement.addEventListener("dblclick", (e) => {
   if (intersects.length) {
     const n = new THREE.Vector3();
     n.copy((intersects[0].face as THREE.Face).normal);
+    // 벡터의 방향을 로컬 좌표계에서 월드 좌표계로 변환하여, 해당 벡터가 월드 공간에서 어떤 방향을 향하는지를 알 수 있게 해줍니다.
     n.transformDirection(intersects[0].object.matrixWorld);
 
     const cube = new THREE.Mesh(
@@ -96,8 +96,11 @@ renderer.domElement.addEventListener("dblclick", (e) => {
       new THREE.MeshStandardMaterial()
     );
     cube.lookAt(n);
+    // 큐브의 위치를 클릭된 지점에 설정
     cube.position.copy(intersects[0].point);
+    // 큐브를 클릭된 위치에서 법선 방향으로 약간 이동시킵니다.
     cube.position.addScaledVector(n, 0.1001);
+    // 새로운 큐브를 pickables 배열에 추가하여, 나중에 또 다른 레이캐스팅을 할 때 이 큐브도 교차 가능 대상
     cube.castShadow = true;
 
     scene.add(cube);
